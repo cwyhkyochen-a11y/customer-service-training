@@ -110,51 +110,73 @@ export default function HomePage() {
         </div>
       )}
 
-      {/* 学习路径 - 2x2 grid flow */}
+      {/* 学习路径 - horizontal flow */}
       <div className="mb-8">
         <div className="flex items-center gap-2 mb-4">
           <BookOpen className="h-4 w-4 text-indigo-500" />
           <h2 className="text-sm font-semibold text-slate-800">学习路径</h2>
         </div>
 
-        <div className="relative">
-          {/* Connecting arrows */}
-          <div className="hidden md:block pointer-events-none">
-            <div className="absolute z-10" style={{ top: '58px', left: 'calc(50% - 4px)' }}>
-              <svg width="28" height="16" viewBox="0 0 28 16" fill="none"><path d="M0 8h20M16 3l5 5-5 5" stroke="#c4b5fd" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" opacity="0.5"/></svg>
-            </div>
-            <div className="absolute z-10" style={{ top: '120px', right: 'calc(50% - 22px)' }}>
-              <svg width="16" height="28" viewBox="0 0 16 28" fill="none"><path d="M8 0v20M3 16l5 5 5-5" stroke="#fda4af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" opacity="0.5"/></svg>
-            </div>
-            <div className="absolute z-10" style={{ top: '190px', left: 'calc(50% - 4px)' }}>
-              <svg width="28" height="16" viewBox="0 0 28 16" fill="none"><path d="M0 8h20M16 3l5 5-5 5" stroke="#a5b4fc" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" opacity="0.5"/></svg>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-x-5 gap-y-4">
-            {learningSteps.map((s) => (
+        {/* Desktop: horizontal flow with arrows */}
+        <div className="hidden md:flex items-start justify-between relative">
+          {learningSteps.map((s, i) => (
+            <div key={s.href} className="flex items-start">
               <div
-                key={s.href}
-                className="group cursor-pointer rounded-2xl p-5 relative overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+                className="group cursor-pointer relative overflow-hidden rounded-2xl p-4 w-[155px] transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
                 onClick={() => router.push(s.href)}
               >
-                <div className={`absolute inset-0 bg-gradient-to-br ${s.color} opacity-[0.06] group-hover:opacity-[0.12] transition-opacity duration-300`} />
-                <div className="absolute inset-0 rounded-2xl border border-slate-200/50 group-hover:border-slate-300/80 transition-all duration-300" />
-
+                <div className={`absolute inset-0 bg-gradient-to-br ${s.color} opacity-[0.06] group-hover:opacity-[0.12] transition-opacity`} />
+                <div className="absolute inset-0 rounded-2xl border border-slate-200/50 group-hover:border-slate-300/80 transition-all" />
                 <div className="relative">
-                  <div className="flex items-start justify-between mb-3">
-                    <span className="text-[10px] font-bold tracking-widest text-slate-400 uppercase">Step {s.step}</span>
-                    <div className={`h-9 w-9 rounded-xl bg-gradient-to-br ${s.color} flex items-center justify-center shadow-md group-hover:shadow-lg group-hover:scale-110 transition-all duration-300`}>
-                      <s.icon className="h-[18px] w-[18px] text-white" />
-                    </div>
+                  <div className={`h-9 w-9 rounded-xl bg-gradient-to-br ${s.color} flex items-center justify-center shadow-md mb-3`}>
+                    <s.icon className="h-[18px] w-[18px] text-white" />
                   </div>
-                  <h3 className="text-base font-bold text-slate-800">{s.title}</h3>
-                  <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">{s.desc}</p>
-                  <div className={`absolute bottom-0 left-5 right-5 h-0.5 rounded-full bg-gradient-to-r ${s.color} opacity-0 group-hover:opacity-60 transition-opacity duration-300`} />
+                  <p className="text-sm font-bold text-slate-800">{s.title}</p>
+                  <p className="text-[11px] text-muted-foreground mt-1 leading-relaxed">{s.desc}</p>
+                  <div className={`absolute bottom-0 left-4 right-4 h-0.5 rounded-full bg-gradient-to-r ${s.color} opacity-0 group-hover:opacity-60 transition-opacity`} />
                 </div>
               </div>
-            ))}
-          </div>
+              {/* Arrow between steps */}
+              {i < learningSteps.length - 1 && (
+                <div className="flex items-center justify-center px-1 pt-4">
+                  <svg width="20" height="16" viewBox="0 0 20 16" fill="none">
+                    <path d="M0 8h14M11 3l4.5 5L11 13" stroke="#c4b5fd" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" opacity="0.6"/>
+                  </svg>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Mobile: vertical stack */}
+        <div className="md:hidden space-y-2">
+          {learningSteps.map((s, i) => (
+            <div key={s.href}>
+              <div
+                className="group cursor-pointer relative overflow-hidden rounded-2xl p-4 transition-all duration-300"
+                onClick={() => router.push(s.href)}
+              >
+                <div className={`absolute inset-0 bg-gradient-to-br ${s.color} opacity-[0.06] group-hover:opacity-[0.12] transition-opacity`} />
+                <div className="absolute inset-0 rounded-2xl border border-slate-200/50" />
+                <div className="relative flex items-center gap-3">
+                  <div className={`h-9 w-9 rounded-xl bg-gradient-to-br ${s.color} flex items-center justify-center shadow-md shrink-0`}>
+                    <s.icon className="h-[18px] w-[18px] text-white" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-slate-800">{s.title}</p>
+                    <p className="text-[11px] text-muted-foreground">{s.desc}</p>
+                  </div>
+                </div>
+              </div>
+              {i < learningSteps.length - 1 && (
+                <div className="flex justify-center py-1">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M8 2v10M4 8l4 4 4-4" stroke="#c4b5fd" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" opacity="0.5"/>
+                  </svg>
+                </div>
+              )}
+            </div>
+          ))}
         </div>
 
         <div className="mt-3 text-center">
