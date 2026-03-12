@@ -77,45 +77,79 @@ export default function HomePage() {
 
       {/* ===== 学习进度概览 ===== */}
       {stats && !loading && (
-        <div className="grid grid-cols-3 gap-2.5 mb-7">
-          <Card className="rounded-xl border shadow-sm">
-            <CardContent className="p-4 text-center">
-              <div className="flex items-center justify-center gap-1 mb-1">
-                <Target className="h-3.5 w-3.5 text-indigo-500" />
-                <span className="text-[11px] text-muted-foreground">知识点</span>
+        <div className="grid grid-cols-3 gap-3 mb-8">
+          {/* 知识点掌握 */}
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-500 via-indigo-600 to-violet-600 p-4 shadow-lg shadow-indigo-500/20 group hover:shadow-xl hover:shadow-indigo-500/30 transition-all duration-300">
+            <div className="absolute -right-3 -top-3 h-20 w-20 rounded-full bg-white/[0.08] blur-sm" />
+            <div className="absolute -right-1 -bottom-1 h-12 w-12 rounded-full bg-white/[0.05]" />
+            <div className="relative">
+              <div className="flex items-center gap-1.5 mb-3">
+                <Target className="h-3.5 w-3.5 text-indigo-200" />
+                <span className="text-[11px] font-medium text-indigo-200">知识点</span>
               </div>
-              <p className="text-lg font-semibold text-slate-800">
-                {stats.knowledge_mastered}<span className="text-sm text-muted-foreground">/{stats.knowledge_total}</span>
-              </p>
-            </CardContent>
-          </Card>
+              <div className="flex items-end gap-0.5">
+                <span className="text-3xl font-bold text-white tracking-tight leading-none">{stats.knowledge_mastered}</span>
+                <span className="text-sm text-indigo-200 mb-0.5">/ {stats.knowledge_total}</span>
+              </div>
+              <div className="mt-3 h-1 w-full rounded-full bg-white/15 overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-white/80 transition-all duration-700"
+                  style={{ width: stats.knowledge_total > 0 ? `${Math.round((stats.knowledge_mastered / stats.knowledge_total) * 100)}%` : '0%' }}
+                />
+              </div>
+            </div>
+          </div>
 
-          <Card className="rounded-xl border shadow-sm">
-            <CardContent className="p-4 text-center">
-              <div className="flex items-center justify-center gap-1 mb-1">
-                <TrendingUp className="h-3.5 w-3.5 text-rose-500" />
-                <span className="text-[11px] text-muted-foreground">对练</span>
+          {/* 对练次数 */}
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-rose-500 via-pink-500 to-fuchsia-500 p-4 shadow-lg shadow-rose-500/20 group hover:shadow-xl hover:shadow-rose-500/30 transition-all duration-300">
+            <div className="absolute -right-3 -top-3 h-20 w-20 rounded-full bg-white/[0.08] blur-sm" />
+            <div className="absolute -right-1 -bottom-1 h-12 w-12 rounded-full bg-white/[0.05]" />
+            <div className="relative">
+              <div className="flex items-center gap-1.5 mb-3">
+                <TrendingUp className="h-3.5 w-3.5 text-rose-200" />
+                <span className="text-[11px] font-medium text-rose-200">对练</span>
               </div>
-              <p className="text-lg font-semibold text-slate-800">
-                {stats.customer_total}
+              <div className="flex items-end gap-0.5">
+                <span className="text-3xl font-bold text-white tracking-tight leading-none">{stats.customer_total}</span>
                 {stats.customer_total > 0 && (
-                  <span className="text-sm text-green-500 ml-1">
-                    {Math.round((stats.customer_success / stats.customer_total) * 100)}%
-                  </span>
+                  <span className="text-sm text-rose-200 mb-0.5">胜率 {Math.round((stats.customer_success / stats.customer_total) * 100)}%</span>
                 )}
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="rounded-xl border shadow-sm">
-            <CardContent className="p-4 text-center">
-              <div className="flex items-center justify-center gap-1 mb-1">
-                <Clock className="h-3.5 w-3.5 text-amber-500" />
-                <span className="text-[11px] text-muted-foreground">今日</span>
               </div>
-              <p className="text-lg font-semibold text-slate-800">{stats.today_count}</p>
-            </CardContent>
-          </Card>
+              <div className="mt-3 flex gap-1">
+                {Array.from({ length: Math.min(stats.customer_total, 10) }).map((_, i) => (
+                  <div
+                    key={i}
+                    className={`h-1.5 w-1.5 rounded-full ${i < stats.customer_success ? 'bg-white/80' : 'bg-white/20'}`}
+                  />
+                ))}
+                {stats.customer_total > 10 && (
+                  <span className="text-[10px] text-rose-200 ml-0.5">+{stats.customer_total - 10}</span>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* 今日练习 */}
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-500 via-orange-500 to-orange-600 p-4 shadow-lg shadow-orange-500/20 group hover:shadow-xl hover:shadow-orange-500/30 transition-all duration-300">
+            <div className="absolute -right-3 -top-3 h-20 w-20 rounded-full bg-white/[0.08] blur-sm" />
+            <div className="absolute -right-1 -bottom-1 h-12 w-12 rounded-full bg-white/[0.05]" />
+            <div className="relative">
+              <div className="flex items-center gap-1.5 mb-3">
+                <Clock className="h-3.5 w-3.5 text-amber-200" />
+                <span className="text-[11px] font-medium text-amber-200">今日</span>
+              </div>
+              <div className="flex items-end gap-0.5">
+                <span className="text-3xl font-bold text-white tracking-tight leading-none">{stats.today_count}</span>
+                <span className="text-sm text-amber-200 mb-0.5">次练习</span>
+              </div>
+              <div className="mt-3 flex items-center gap-1">
+                <div className={`h-1.5 w-1.5 rounded-full ${stats.today_count > 0 ? 'bg-white/80 animate-pulse' : 'bg-white/20'}`} />
+                <span className="text-[10px] text-amber-200">
+                  {stats.today_count > 0 ? '今日活跃' : '还没有练习'}
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
