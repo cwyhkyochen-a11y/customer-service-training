@@ -6,7 +6,7 @@
 
 ### 运营后台 (Admin)
 - **账号管理** — 新增/管理客服和管理员账号
-- **模型配置** — 接入 Kimi / 通义千问 / DeepSeek 等大模型
+- **模型配置** — 接入 Kimi / MiniMax 大模型
 - **提示词管理** — 配置各 AI 场景的提示词（虚拟顾客、教学、评价等）
 - **文档管理** — 上传话术文档（支持 xlsx / docx），自动生成思维导图、PPT
 - **虚拟顾客** — 管理虚拟顾客角色，设定难度和特征
@@ -58,8 +58,7 @@ cp .env.example .env
 |------|------|------|
 | `JWT_SECRET` | JWT 签名密钥，改为任意随机字符串 | ✅ |
 | `KIMI_API_KEY` | 月之暗面（Kimi）API Key | 至少填一个 |
-| `QWEN_API_KEY` | 通义千问 API Key | 至少填一个 |
-| `DEEPSEEK_API_KEY` | DeepSeek API Key | 至少填一个 |
+| `MINIMAX_API_KEY` | MiniMax API Key | 至少填一个 |
 | `ADMIN_PORT` | 运营后台端口（默认 3002） | ❌ |
 | `CLIENT_PORT` | 客户端端口（默认 3000） | ❌ |
 
