@@ -7,7 +7,7 @@ import { eq } from 'drizzle-orm';
 import type { User, UserRole } from '@cs-training/shared';
 
 const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || 'cs-training-secret-key-2024'
+  process.env.JWT_SECRET || 'change-me-in-production'
 );
 
 // ===== Password Hashing =====

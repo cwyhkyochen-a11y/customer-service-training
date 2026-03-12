@@ -12,3 +12,8 @@ pnpm-lock.yaml
 .backup/
 .dev-pipeline/
 *.tar.gz
+
+# Environment variables
+.env
+.env.local
+.env.*.local

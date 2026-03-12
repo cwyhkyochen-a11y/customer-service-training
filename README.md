@@ -17,7 +17,7 @@ customer-service-training/
 │   ├── shared/          # 共享类型定义
 │   └── database/        # Drizzle ORM schema + 迁移脚本
 ├── apps/
-│   ├── admin/           # 运营后台 (端口3002)
+│   ├── admin/           # 运营后台 
 │   │   └── src/
 │   │       ├── app/
 │   │       │   ├── login/page.tsx
@@ -61,7 +61,7 @@ customer-service-training/
 │   │           ├── sidebar.tsx          # 侧边栏导航
 │   │           ├── mindmap-tree.tsx     # 思维导图树
 │   │           └── node-selector.tsx    # 节点多选器
-│   └── client/          # 客户端 (端口3000)
+│   └── client/          # 客户端 
 │       └── src/
 │           ├── app/
 │           │   ├── login/page.tsx
@@ -124,21 +124,3 @@ customer-service-training/
 4. **AI教学**: 课程绑定知识点 → LLM出题 → 客服答题 → LLM评分(≥7分掌握)
 5. **AI辅助对话**: 选文档(最多5个) → 输入用户消息+背景 → LLM拟回复
 
-## 部署信息
-- **服务器**: 14.103.210.113 (火山引擎)
-- **SSH**: `ssh -i ~/.ssh/yoyo_volcengine.pem root@14.103.210.113`
-- **远程路径**: `/opt/cs-training-v2/`
-- **数据库**: `/opt/cs-training-v2/data/cs-training.db`
-- **进程管理**: PM2 (cs-admin:3002, cs-client:3000)
-- **部署流程**: 本地编辑 → rsync同步 → 服务器npx next build → pm2 restart
-
-## 账号
-- 管理员: `admin` / `Admin@2024`
-- 测试客服: `客服测试1` / `Test1234`
-
-## 设计规范
-- 品牌色: indigo-600 (#4f46e5) + purple-500 (#8b5cf6) 渐变
-- CSS变量 --primary 统一为 indigo
-- 卡片: rounded-xl + shadow-sm, hover:shadow-md
-- 图标容器: h-10 w-10 rounded-xl, 各模块配色区分
-- 详见 DESIGN_SYSTEM.md

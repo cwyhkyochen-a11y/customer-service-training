@@ -153,8 +153,8 @@ sqlite.exec(`
   );
 `);
 
-// Seed admin user (password: Admin@2024)
-const adminPassword = 'Admin@2024';
+// Seed admin user (set SEED_ADMIN_PASSWORD env var, or defaults to 'changeme')
+const adminPassword = process.env.SEED_ADMIN_PASSWORD || 'changeme';
 const salt = crypto.randomBytes(16).toString('hex');
 const hash = crypto.scryptSync(adminPassword, salt, 64).toString('hex');
 const passwordHash = `${salt}:${hash}`;
@@ -162,7 +162,7 @@ const passwordHash = `${salt}:${hash}`;
 const existing = sqlite.prepare('SELECT id FROM users WHERE username = ?').get('admin');
 if (!existing) {
   sqlite.prepare('INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)').run('admin', passwordHash, 'admin');
-  console.log('Admin user created: admin / Admin@2024');
+  console.log('Admin user created. Please change default password on first login.');
 } else {
   console.log('Admin user already exists');
 }
