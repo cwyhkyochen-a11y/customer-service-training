@@ -1,126 +1,189 @@
-# 容易学 - 话术辅助系统 v1.0 开发文档
+# 容易学 - 客服话术辅助系统
 
-## 项目概述
-客服话术学习与辅助系统，包含运营后台（Admin）和客户端（Client）两个前端应用，共享数据库和后端API。
+一款面向客服团队的话术学习与对练平台。运营人员上传话术文档，系统自动提炼知识结构；客服通过 AI 模拟对话进行实战练习，逐步提升话术能力。
+
+## 功能一览
+
+### 运营后台 (Admin)
+- **账号管理** — 新增/管理客服和管理员账号
+- **模型配置** — 接入 Kimi / 通义千问 / DeepSeek 等大模型
+- **提示词管理** — 配置各 AI 场景的提示词（虚拟顾客、教学、评价等）
+- **文档管理** — 上传话术文档（支持 xlsx / docx），自动生成思维导图、PPT
+- **虚拟顾客** — 管理虚拟顾客角色，设定难度和特征
+- **AI 教学课程** — 创建课程，关联知识点
+- **练习记录** — 查看所有客服的对练和答题记录
+- **客服档案** — 查看每位客服的能力成长数据
+- **用量统计** — 监控各模型的调用次数和 token 消耗
+
+### 客户端 (Client)
+- **文档学习** — 浏览话术文档和思维导图
+- **AI 教学** — AI 出题考试，自动评分，≥7 分标记为已掌握
+- **虚拟顾客对练** — 与 AI 扮演的顾客对话，结束时获得话术评价
+- **AI 辅助对话** — 选择多份文档作为参考，输入场景和客户消息，AI 给出建议回复
+- **练习记录** — 回顾自己的答题和对练历史
+- **个人档案** — 查看能力雷达图、对练分析、知识掌握度
 
 ## 技术栈
-- **框架**: Next.js 16 (React 19 + TypeScript)
+
+- **框架**: Next.js 16 (App Router) + React 19 + TypeScript
 - **样式**: Tailwind CSS v4 + shadcn/ui
 - **数据库**: SQLite (better-sqlite3) + Drizzle ORM
-- **认证**: JWT (jose库), Bearer Token, Cookie存储, 7天有效期
-- **部署**: PM2 进程管理
+- **认证**: JWT (jose 库), Cookie 存储, 7 天有效期
+- **进程管理**: PM2
+
+## 快速开始
+
+### 1. 环境要求
+
+- Node.js >= 22
+- pnpm >= 9
+
+### 2. 安装依赖
+
+```bash
+git clone https://github.com/cwyhkyochen-a11y/customer-service-training.git
+cd customer-service-training
+pnpm install
+```
+
+### 3. 配置环境变量
+
+```bash
+cp .env.example .env
+```
+
+编辑 `.env`，填写必要的配置：
+
+| 变量 | 说明 | 必填 |
+|------|------|------|
+| `JWT_SECRET` | JWT 签名密钥，改为任意随机字符串 | ✅ |
+| `KIMI_API_KEY` | 月之暗面（Kimi）API Key | 至少填一个 |
+| `QWEN_API_KEY` | 通义千问 API Key | 至少填一个 |
+| `DEEPSEEK_API_KEY` | DeepSeek API Key | 至少填一个 |
+| `ADMIN_PORT` | 运营后台端口（默认 3002） | ❌ |
+| `CLIENT_PORT` | 客户端端口（默认 3000） | ❌ |
+
+### 4. 初始化数据库
+
+```bash
+pnpm db:migrate
+```
+
+这会创建数据库并插入默认管理员账号：
+- **用户名**: admin
+- **密码**: Admin@2024
+
+### 5. 启动开发环境
+
+```bash
+# 同时启动运营后台和客户端
+pnpm dev
+
+# 或分别启动
+pnpm dev:admin   # 运营后台 → http://localhost:3002
+pnpm dev:client  # 客户端 → http://localhost:3000
+```
+
+打开浏览器访问：
+- 运营后台: http://localhost:3002
+- 客户端: http://localhost:3000
+
+## 生产部署
+
+### 构建
+
+```bash
+pnpm build
+```
+
+### PM2 部署
+
+```bash
+# 启动服务
+pm2 start ecosystem.config.js
+
+# 查看状态
+pm2 status
+
+# 查看日志
+pm2 logs cs-admin
+pm2 logs cs-client
+
+# 重启
+pm2 restart cs-admin
+pm2 restart cs-client
+```
+
+## 常用命令
+
+```bash
+pnpm dev:admin    # 开发模式 - 运营后台
+pnpm dev:client   # 开发模式 - 客户端
+pnpm build        # 构建所有应用
+pnpm db:migrate   # 初始化/迁移数据库
+```
 
 ## 项目结构
+
 ```
 customer-service-training/
 ├── packages/
 │   ├── shared/          # 共享类型定义
 │   └── database/        # Drizzle ORM schema + 迁移脚本
 ├── apps/
-│   ├── admin/           # 运营后台 
+│   ├── admin/           # 运营后台
 │   │   └── src/
 │   │       ├── app/
 │   │       │   ├── login/page.tsx
-│   │       │   ├── (dashboard)/
-│   │       │   │   ├── layout.tsx        # 侧边栏布局
-│   │       │   │   ├── page.tsx          # 首页(功能导航)
-│   │       │   │   ├── accounts/         # 账号管理
-│   │       │   │   ├── models/           # 模型管理
-│   │       │   │   ├── prompts/          # 提示词管理
-│   │       │   │   ├── documents/        # 文档管理 + 思维导图 + PPT
-│   │       │   │   ├── customers/        # 虚拟顾客管理
-│   │       │   │   ├── courses/          # AI教学课程
-│   │       │   │   ├── records/          # 练习记录
-│   │       │   │   ├── profiles/         # 客服档案
-│   │       │   │   └── usage/            # 用量统计
-│   │       │   └── api/
-│   │       │       ├── auth/             # 管理端登录
-│   │       │       ├── users/            # 用户CRUD
-│   │       │       ├── models/           # 模型配置CRUD
-│   │       │       ├── prompts/          # 提示词配置
-│   │       │       ├── documents/        # 文档上传+思维导图+PPT
-│   │       │       ├── customers/        # 虚拟顾客CRUD
-│   │       │       ├── courses/          # 课程+知识点CRUD
-│   │       │       ├── records/          # 练习记录查询
+│   │       │   └── (dashboard)/
+│   │       │       ├── page.tsx          # 首页(功能导航)
+│   │       │       ├── accounts/         # 账号管理
+│   │       │       ├── models/           # 模型管理
+│   │       │       ├── prompts/          # 提示词管理
+│   │       │       ├── documents/        # 文档管理 + 思维导图 + PPT
+│   │       │       ├── customers/        # 虚拟顾客管理
+│   │       │       ├── courses/          # AI教学课程
+│   │       │       ├── records/          # 练习记录
 │   │       │       ├── profiles/         # 客服档案
-│   │       │       ├── usage/            # 用量统计API
-│   │       │       └── client/           # 客户端专用API
-│   │       │           ├── auth/login/   # 客户端登录
-│   │       │           ├── documents/    # 文档查看
-│   │       │           ├── courses/      # 教学(start/chat/quit)
-│   │       │           ├── customers/    # 对练(start/chat/quit)
-│   │       │           ├── ai-assist/    # AI辅助对话
-│   │       │           ├── records/      # 练习记录
-│   │       │           └── profile/      # 个人档案
-│   │       ├── lib/
-│   │       │   ├── ai.ts               # LLM调用(callAI)+用量记录
-│   │       │   ├── api-utils.ts        # 鉴权+响应工具
-│   │       │   ├── api-client.ts       # 前端API客户端
-│   │       │   └── file-parser.ts      # 文档解析(xlsx/docx)
-│   │       └── components/
-│   │           ├── sidebar.tsx          # 侧边栏导航
-│   │           ├── mindmap-tree.tsx     # 思维导图树
-│   │           └── node-selector.tsx    # 节点多选器
-│   └── client/          # 客户端 
+│   │       │       └── usage/            # 用量统计
+│   │       └── lib/
+│   │           ├── ai.ts               # LLM调用 + 用量记录
+│   │           ├── api-utils.ts        # 鉴权 + 响应工具
+│   │           └── file-parser.ts      # 文档解析(xlsx/docx)
+│   └── client/          # 客户端
 │       └── src/
 │           ├── app/
 │           │   ├── login/page.tsx
-│           │   ├── (main)/
-│           │   │   ├── layout.tsx        # 导航栏布局
-│           │   │   ├── page.tsx          # 首页(功能导航)
-│           │   │   ├── documents/        # 文档学习
-│           │   │   ├── courses/          # AI教学
-│           │   │   ├── customers/        # 虚拟顾客对练
-│           │   │   ├── ai-assist/        # AI辅助对话
-│           │   │   ├── records/          # 练习记录
-│           │   │   └── profile/          # 我的档案
-│           │   └── api/client/           # Route Handler代理(55s超时)
-│           ├── lib/
-│           │   └── api.ts               # 前端API客户端
-│           └── components/
-│               ├── nav-bar.tsx           # 侧边栏+底部Tab
-│               ├── chat-interface.tsx    # 聊天界面
-│               ├── mindmap-tree.tsx      # 思维导图
-│               └── progress-bar.tsx      # 进度条
-└── DESIGN_SYSTEM.md     # UI设计规范
+│           │   └── (main)/
+│           │       ├── documents/        # 文档学习
+│           │       ├── courses/          # AI教学
+│           │       ├── customers/        # 虚拟顾客对练
+│           │       ├── ai-assist/        # AI辅助对话
+│           │       ├── records/          # 练习记录
+│           │       └── profile/          # 我的档案
+│           └── lib/
+│               └── api.ts               # 前端API客户端
+├── ecosystem.config.js  # PM2 配置
+└── DESIGN_SYSTEM.md     # UI 设计规范
 ```
 
-## 数据库表 (13张)
-| 表名 | 说明 |
-|------|------|
-| users | 用户(admin/client角色) |
-| sessions | JWT会话 |
-| model_configs | AI模型配置 |
-| documents | 话术文档 |
-| document_slides | PPT幻灯片(按页存储) |
-| virtual_customers | 虚拟顾客角色 |
-| courses | AI教学课程 |
-| knowledge_points | 知识点 |
-| practice_records | 练习记录 |
-| user_knowledge_progress | 知识点掌握进度 |
-| user_customer_results | 顾客对练结果 |
-| llm_usage_logs | LLM调用用量日志 |
-| prompt_configs | 提示词自定义配置 |
+## AI 场景
 
-## AI场景 (10个)
-| scene_id | 说明 |
+系统包含 10 个 AI 场景，对应不同的业务功能：
+
+| scene_id | 用途 |
 |----------|------|
-| mindmap | 文档→思维导图JSON |
-| mindmap_structure | 长文档骨架提取 |
-| mindmap_chunk | 长文档分块生成 |
-| customer_generate | 生成虚拟顾客角色 |
-| customer_chat | 虚拟顾客对话 |
-| customer_feedback | 话术评价 |
-| teaching_start | AI教学出题 |
-| teaching_chat | AI教学评分 |
-| slides | PPT生成 |
-| knowledge_generate | 知识点提取 |
-| ai_assist | AI辅助对话 |
+| `mindmap` | 文档 → 思维导图 JSON |
+| `mindmap_structure` | 长文档骨架提取 |
+| `mindmap_chunk` | 长文档分块生成思维导图 |
+| `customer_generate` | 生成虚拟顾客角色 |
+| `customer_chat` | 虚拟顾客对练对话 |
+| `customer_feedback` | 话术评价与建议 |
+| `teaching_start` | AI 教学出题 |
+| `teaching_chat` | AI 教学答题评分 |
+| `slides` | PPT 幻灯片生成 |
+| `knowledge_generate` | 知识点自动提取 |
 
-## 核心流程
-1. **文档处理**: 上传xlsx/docx → 解析内容 → LLM生成思维导图JSON → 存储
-2. **PPT生成**: 思维导图节点 → LLM逐节点生成HTML幻灯片 → 按页存储
-3. **虚拟顾客**: 选择思维导图节点 → LLM生成顾客角色 → 客服对练 → LLM评价
-4. **AI教学**: 课程绑定知识点 → LLM出题 → 客服答题 → LLM评分(≥7分掌握)
-5. **AI辅助对话**: 选文档(最多5个) → 输入用户消息+背景 → LLM拟回复
+## 许可证
 
+私有项目，未经授权禁止分发。
