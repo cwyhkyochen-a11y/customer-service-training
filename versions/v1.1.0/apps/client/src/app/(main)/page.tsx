@@ -154,65 +154,53 @@ export default function HomePage() {
       )}
 
       {/* ===== 学习路径 ===== */}
-      <div className="mb-6">
-        <div className="flex items-center gap-2 mb-3">
+      <div className="mb-8">
+        <div className="flex items-center gap-2 mb-4">
           <BookOpen className="h-4 w-4 text-indigo-500" />
           <h2 className="text-sm font-semibold text-slate-800">学习路径</h2>
         </div>
 
-        <div className="space-y-2.5">
+        {/* Flow nodes with CSS connectors */}
+        <div className="space-y-2.5 relative">
+          {/* Vertical flow line */}
+          <div className="absolute left-[29px] top-5 bottom-5 w-0.5 bg-gradient-to-b from-blue-300 via-violet-300 via-rose-300 to-indigo-300 opacity-40 rounded-full" />
+
           {learningSteps.map((s) => (
-            <Card
+            <div
               key={s.href}
-              className="rounded-xl border shadow-sm hover:shadow-md hover:border-primary/20 transition-all duration-200 cursor-pointer group"
+              className="relative flex items-center gap-4 rounded-2xl p-3.5 cursor-pointer group transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-slate-200/50 hover:-translate-y-0.5"
               onClick={() => router.push(s.href)}
             >
-              <CardContent className="flex items-center gap-4 p-4">
-                {/* 步骤编号 + icon */}
-                <div className="relative shrink-0">
-                  <div className={`h-10 w-10 rounded-xl bg-gradient-to-br ${s.color} flex items-center justify-center shadow-sm`}>
-                    <s.icon className="h-5 w-5 text-white" />
-                  </div>
-                  <div className="absolute -top-1 -left-1 h-4 w-4 rounded-full bg-slate-800 text-white text-[10px] flex items-center justify-center font-medium">
-                    {s.step}
-                  </div>
+              {/* Left icon node */}
+              <div className="relative shrink-0 z-10">
+                <div className={`h-[58px] w-[58px] rounded-2xl bg-gradient-to-br ${s.color} flex items-center justify-center shadow-lg shadow-slate-900/10 group-hover:shadow-xl group-hover:scale-105 transition-all duration-300`}>
+                  <s.icon className="h-6 w-6 text-white" />
                 </div>
-
-                {/* 内容 */}
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-slate-800">{s.title}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">{s.desc}</p>
+                <div className="absolute -bottom-1 -right-1 h-5 w-5 rounded-full bg-white shadow-md shadow-slate-900/10 flex items-center justify-center">
+                  <span className="text-[9px] font-extrabold text-slate-600">{s.step}</span>
                 </div>
+              </div>
 
-                {/* 箭头 */}
-                <ArrowRight className="h-4 w-4 text-muted-foreground/30 group-hover:text-primary group-hover:translate-x-0.5 transition-all duration-200 shrink-0" />
-              </CardContent>
-            </Card>
+              {/* Content area */}
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-bold text-slate-800 group-hover:text-indigo-600 transition-colors">{s.title}</p>
+                <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{s.desc}</p>
+              </div>
+
+              {/* Right CTA */}
+              <div className="shrink-0 flex items-center gap-1 opacity-0 group-hover:opacity-100 translate-x-1 group-hover:translate-x-0 transition-all duration-300">
+                <span className="text-xs font-medium text-indigo-500">开始</span>
+                <ArrowRight className="h-3.5 w-3.5 text-indigo-400" />
+              </div>
+            </div>
           ))}
         </div>
 
-        <div className="mt-3 px-2">
-          <p className="text-[11px] text-muted-foreground/60 text-center">
+        <div className="mt-3 text-center">
+          <p className="text-[11px] text-muted-foreground/50">
             推荐按顺序学习 · 也可直接进入任意功能
           </p>
         </div>
-      </div>
-
-      {/* ===== 快捷入口 ===== */}
-      <div className="grid grid-cols-2 gap-2.5">
-        {quickLinks.map((link) => (
-          <Card
-            key={link.href}
-            className="rounded-xl border shadow-sm hover:shadow-md hover:border-primary/20 transition-all duration-200 cursor-pointer group"
-            onClick={() => router.push(link.href)}
-          >
-            <CardContent className="flex items-center gap-3 p-4">
-              <link.icon className="h-4 w-4 text-slate-400 group-hover:text-indigo-500 transition-colors" />
-              <span className="text-sm text-slate-600 group-hover:text-slate-800 transition-colors">{link.label}</span>
-              <ChevronRight className="h-3 w-3 text-muted-foreground/30 ml-auto group-hover:text-primary transition-colors" />
-            </CardContent>
-          </Card>
-        ))}
       </div>
     </div>
   );
