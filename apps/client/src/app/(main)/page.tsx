@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   FileText, GraduationCap, Users, MessageCircle, ClipboardList, UserCircle,
-  ArrowRight, Sparkles, BookOpen, Target, TrendingUp, Clock, ChevronRight,
+  ArrowRight, ChevronRight, BookOpen, Target, TrendingUp, Clock,
 } from 'lucide-react';
 import { getHomeStats, type HomeStats } from '@/lib/api';
 
@@ -15,8 +15,6 @@ const learningSteps = [
     step: 1,
     icon: FileText,
     color: 'from-blue-500 to-cyan-500',
-    bgColor: 'bg-blue-50',
-    textColor: 'text-blue-600',
     title: '学文档',
     desc: '浏览话术文档，理解知识结构',
     href: '/documents',
@@ -25,8 +23,6 @@ const learningSteps = [
     step: 2,
     icon: GraduationCap,
     color: 'from-violet-500 to-purple-500',
-    bgColor: 'bg-violet-50',
-    textColor: 'text-violet-600',
     title: 'AI 考试',
     desc: 'AI 出题，逐个攻克知识点',
     href: '/courses',
@@ -35,8 +31,6 @@ const learningSteps = [
     step: 3,
     icon: Users,
     color: 'from-rose-500 to-pink-500',
-    bgColor: 'bg-rose-50',
-    textColor: 'text-rose-600',
     title: '对练实战',
     desc: '和虚拟顾客模拟真实场景',
     href: '/customers',
@@ -45,8 +39,6 @@ const learningSteps = [
     step: 4,
     icon: MessageCircle,
     color: 'from-indigo-500 to-blue-500',
-    bgColor: 'bg-indigo-50',
-    textColor: 'text-indigo-600',
     title: 'AI 辅助',
     desc: '遇到难题，AI 帮你拟定回复',
     href: '/ai-assist',
@@ -70,16 +62,12 @@ export default function HomePage() {
     });
   }, []);
 
-  const progressPct = stats && stats.knowledge_total > 0
-    ? Math.round((stats.knowledge_mastered / stats.knowledge_total) * 100)
-    : 0;
-
   return (
     <div className="max-w-3xl pb-24 md:pb-6">
       {/* ===== 顶部欢迎 ===== */}
       <div className="flex items-center gap-3 mb-6">
         <div className="h-11 w-11 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center shadow-lg shadow-indigo-200/50">
-          <Sparkles className="h-5 w-5 text-white" />
+          <GraduationCap className="h-5 w-5 text-white" />
         </div>
         <div>
           <h1 className="text-xl font-semibold text-slate-800">欢迎使用容易学</h1>
@@ -139,14 +127,14 @@ export default function HomePage() {
         </div>
 
         <div className="space-y-2.5">
-          {learningSteps.map((s, i) => (
+          {learningSteps.map((s) => (
             <Card
               key={s.href}
               className="rounded-xl border shadow-sm hover:shadow-md hover:border-primary/20 transition-all duration-200 cursor-pointer group"
               onClick={() => router.push(s.href)}
             >
               <CardContent className="flex items-center gap-4 p-4">
-                {/* 步骤编号 */}
+                {/* 步骤编号 + icon */}
                 <div className="relative shrink-0">
                   <div className={`h-10 w-10 rounded-xl bg-gradient-to-br ${s.color} flex items-center justify-center shadow-sm`}>
                     <s.icon className="h-5 w-5 text-white" />
@@ -169,7 +157,6 @@ export default function HomePage() {
           ))}
         </div>
 
-        {/* 步骤连接线说明 */}
         <div className="mt-3 px-2">
           <p className="text-[11px] text-muted-foreground/60 text-center">
             推荐按顺序学习 · 也可直接进入任意功能
