@@ -1,90 +1,194 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   FileText, GraduationCap, Users, MessageCircle, ClipboardList, UserCircle,
-  ArrowRight, Sparkles,
+  ArrowRight, Sparkles, BookOpen, Target, TrendingUp, Clock, ChevronRight,
 } from 'lucide-react';
+import { getHomeStats, type HomeStats } from '@/lib/api';
 
-const features = [
+// 学习路径步骤
+const learningSteps = [
   {
-    href: '/documents',
+    step: 1,
     icon: FileText,
-    color: 'bg-blue-50 text-blue-600',
-    title: '文档学习',
-    desc: '查看话术文档的知识结构和PPT课件',
+    color: 'from-blue-500 to-cyan-500',
+    bgColor: 'bg-blue-50',
+    textColor: 'text-blue-600',
+    title: '学文档',
+    desc: '浏览话术文档，理解知识结构',
+    href: '/documents',
   },
   {
-    href: '/courses',
+    step: 2,
     icon: GraduationCap,
-    color: 'bg-violet-50 text-violet-600',
-    title: 'AI教学',
-    desc: 'AI出题考核，逐个掌握知识点',
+    color: 'from-violet-500 to-purple-500',
+    bgColor: 'bg-violet-50',
+    textColor: 'text-violet-600',
+    title: 'AI 考试',
+    desc: 'AI 出题，逐个攻克知识点',
+    href: '/courses',
   },
   {
-    href: '/customers',
+    step: 3,
     icon: Users,
-    color: 'bg-rose-50 text-rose-600',
-    title: '虚拟顾客',
-    desc: '和AI模拟顾客对练，提升应变能力',
+    color: 'from-rose-500 to-pink-500',
+    bgColor: 'bg-rose-50',
+    textColor: 'text-rose-600',
+    title: '对练实战',
+    desc: '和虚拟顾客模拟真实场景',
+    href: '/customers',
   },
   {
-    href: '/ai-assist',
+    step: 4,
     icon: MessageCircle,
-    color: 'bg-indigo-50 text-indigo-600',
-    title: 'AI辅助对话',
-    desc: '输入用户消息，AI帮你拟定专业回复',
+    color: 'from-indigo-500 to-blue-500',
+    bgColor: 'bg-indigo-50',
+    textColor: 'text-indigo-600',
+    title: 'AI 辅助',
+    desc: '遇到难题，AI 帮你拟定回复',
+    href: '/ai-assist',
   },
-  {
-    href: '/records',
-    icon: ClipboardList,
-    color: 'bg-slate-100 text-slate-600',
-    title: '练习记录',
-    desc: '查看教学和对练的历史记录',
-  },
-  {
-    href: '/profile',
-    icon: UserCircle,
-    color: 'bg-emerald-50 text-emerald-600',
-    title: '我的档案',
-    desc: '按文档维度查看学习进度',
-  },
+];
+
+const quickLinks = [
+  { icon: ClipboardList, label: '练习记录', href: '/records' },
+  { icon: UserCircle, label: '我的档案', href: '/profile' },
 ];
 
 export default function HomePage() {
   const router = useRouter();
+  const [stats, setStats] = useState<HomeStats | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getHomeStats().then((res) => {
+      if (res.success && res.data) setStats(res.data);
+      setLoading(false);
+    });
+  }, []);
+
+  const progressPct = stats && stats.knowledge_total > 0
+    ? Math.round((stats.knowledge_mastered / stats.knowledge_total) * 100)
+    : 0;
 
   return (
-    <div className="max-w-3xl">
-      <div className="flex items-center gap-3 mb-8">
+    <div className="max-w-3xl pb-24 md:pb-6">
+      {/* ===== 顶部欢迎 ===== */}
+      <div className="flex items-center gap-3 mb-6">
         <div className="h-11 w-11 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center shadow-lg shadow-indigo-200/50">
           <Sparkles className="h-5 w-5 text-white" />
         </div>
         <div>
           <h1 className="text-xl font-semibold text-slate-800">欢迎使用容易学</h1>
-          <p className="text-sm text-muted-foreground">选择下方功能开始学习</p>
+          <p className="text-sm text-muted-foreground">跟着下面的步骤开始练习吧</p>
         </div>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2">
-        {features.map((f) => (
-          <Card
-            key={f.href}
-            className="cursor-pointer rounded-xl border shadow-sm hover:shadow-md hover:border-primary/20 transition-all duration-200 group"
-            onClick={() => router.push(f.href)}
-          >
-            <CardContent className="flex items-start gap-4 p-5">
-              <div className={`h-10 w-10 rounded-xl flex items-center justify-center shrink-0 ${f.color}`}>
-                <f.icon className="h-5 w-5" />
+      {/* ===== 学习进度概览 ===== */}
+      {stats && !loading && (
+        <div className="grid grid-cols-3 gap-2.5 mb-7">
+          <Card className="rounded-xl border shadow-sm">
+            <CardContent className="p-4 text-center">
+              <div className="flex items-center justify-center gap-1 mb-1">
+                <Target className="h-3.5 w-3.5 text-indigo-500" />
+                <span className="text-[11px] text-muted-foreground">知识点</span>
               </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm font-medium text-slate-800">{f.title}</p>
-                  <ArrowRight className="h-4 w-4 text-muted-foreground/40 group-hover:text-primary group-hover:translate-x-0.5 transition-all duration-200" />
+              <p className="text-lg font-semibold text-slate-800">
+                {stats.knowledge_mastered}<span className="text-sm text-muted-foreground">/{stats.knowledge_total}</span>
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="rounded-xl border shadow-sm">
+            <CardContent className="p-4 text-center">
+              <div className="flex items-center justify-center gap-1 mb-1">
+                <TrendingUp className="h-3.5 w-3.5 text-rose-500" />
+                <span className="text-[11px] text-muted-foreground">对练</span>
+              </div>
+              <p className="text-lg font-semibold text-slate-800">
+                {stats.customer_total}
+                {stats.customer_total > 0 && (
+                  <span className="text-sm text-green-500 ml-1">
+                    {Math.round((stats.customer_success / stats.customer_total) * 100)}%
+                  </span>
+                )}
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="rounded-xl border shadow-sm">
+            <CardContent className="p-4 text-center">
+              <div className="flex items-center justify-center gap-1 mb-1">
+                <Clock className="h-3.5 w-3.5 text-amber-500" />
+                <span className="text-[11px] text-muted-foreground">今日</span>
+              </div>
+              <p className="text-lg font-semibold text-slate-800">{stats.today_count}</p>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* ===== 学习路径 ===== */}
+      <div className="mb-6">
+        <div className="flex items-center gap-2 mb-3">
+          <BookOpen className="h-4 w-4 text-indigo-500" />
+          <h2 className="text-sm font-semibold text-slate-800">学习路径</h2>
+        </div>
+
+        <div className="space-y-2.5">
+          {learningSteps.map((s, i) => (
+            <Card
+              key={s.href}
+              className="rounded-xl border shadow-sm hover:shadow-md hover:border-primary/20 transition-all duration-200 cursor-pointer group"
+              onClick={() => router.push(s.href)}
+            >
+              <CardContent className="flex items-center gap-4 p-4">
+                {/* 步骤编号 */}
+                <div className="relative shrink-0">
+                  <div className={`h-10 w-10 rounded-xl bg-gradient-to-br ${s.color} flex items-center justify-center shadow-sm`}>
+                    <s.icon className="h-5 w-5 text-white" />
+                  </div>
+                  <div className="absolute -top-1 -left-1 h-4 w-4 rounded-full bg-slate-800 text-white text-[10px] flex items-center justify-center font-medium">
+                    {s.step}
+                  </div>
                 </div>
-                <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{f.desc}</p>
-              </div>
+
+                {/* 内容 */}
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-slate-800">{s.title}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{s.desc}</p>
+                </div>
+
+                {/* 箭头 */}
+                <ArrowRight className="h-4 w-4 text-muted-foreground/30 group-hover:text-primary group-hover:translate-x-0.5 transition-all duration-200 shrink-0" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* 步骤连接线说明 */}
+        <div className="mt-3 px-2">
+          <p className="text-[11px] text-muted-foreground/60 text-center">
+            推荐按顺序学习 · 也可直接进入任意功能
+          </p>
+        </div>
+      </div>
+
+      {/* ===== 快捷入口 ===== */}
+      <div className="grid grid-cols-2 gap-2.5">
+        {quickLinks.map((link) => (
+          <Card
+            key={link.href}
+            className="rounded-xl border shadow-sm hover:shadow-md hover:border-primary/20 transition-all duration-200 cursor-pointer group"
+            onClick={() => router.push(link.href)}
+          >
+            <CardContent className="flex items-center gap-3 p-4">
+              <link.icon className="h-4 w-4 text-slate-400 group-hover:text-indigo-500 transition-colors" />
+              <span className="text-sm text-slate-600 group-hover:text-slate-800 transition-colors">{link.label}</span>
+              <ChevronRight className="h-3 w-3 text-muted-foreground/30 ml-auto group-hover:text-primary transition-colors" />
             </CardContent>
           </Card>
         ))}

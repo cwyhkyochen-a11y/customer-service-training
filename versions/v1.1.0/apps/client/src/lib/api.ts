@@ -300,24 +300,3 @@ export async function aiAssist(data: { document_ids: number[]; customer_message:
     body: JSON.stringify(data),
   });
 }
-
-export interface HomeStats {
-  total_records: number;
-  teaching_count: number;
-  customer_count: number;
-  today_count: number;
-  knowledge_total: number;
-  knowledge_mastered: number;
-  customer_success: number;
-  customer_total: number;
-  document_count: number;
-  last_record: {
-    type: string;
-    created_at: string;
-    document_name: string | null;
-  } | null;
-}
-
-export async function getHomeStats() {
-  return request<HomeStats>('/client/stats');
-}
