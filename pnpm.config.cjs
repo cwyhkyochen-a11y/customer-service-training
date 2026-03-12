@@ -1,0 +1,3 @@
+module.exports = {
+  onlyBuiltDependencies: ['better-sqlite3', 'esbuild', 'sharp', 'unrs-resolver']
+}

@@ -1,0 +1,14 @@
+node_modules/
+.env
+.env.local
+*.db
+uploads/*
+!uploads/.gitkeep
+dist/
+.next/
+.DS_Store
+*.log
+pnpm-lock.yaml
+.backup/
+.dev-pipeline/
+*.tar.gz
